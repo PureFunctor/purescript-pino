@@ -7,3 +7,9 @@ exports._mkLogger = function(options) {
     return pino(options);
   };
 };
+
+exports._logImpl = function(level, logger, options) {
+  return function() {
+    return logger[level](...options);
+  };
+};
