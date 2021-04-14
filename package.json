@@ -1,0 +1,11 @@
+{
+  "name": "purescript-pino",
+  "description": "PureScript bindings for pino.",
+  "repository": "git@github.com:PureFunctor/purescript-pino.git",
+  "author": "PureFunctor <purefunctor@gmail.com>",
+  "license": "BSD-3-Clause",
+  "private": true,
+  "dependencies": {
+    "pino": "^6.11.2"
+  }
+}
