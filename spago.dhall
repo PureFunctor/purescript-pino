@@ -1,7 +1,6 @@
 { name = "pino"
 , dependencies =
-  [ "console"
-  , "effect"
+  [ "effect"
   , "foreign"
   , "foreign-object"
   , "functions"
