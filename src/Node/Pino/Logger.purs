@@ -5,6 +5,7 @@ import Prelude
 import Data.Function.Uncurried (Fn3, runFn3)
 import Data.Options (Option, Options(..), opt, options)
 import Effect (Effect)
+import Effect.Class (class MonadEffect, liftEffect)
 import Foreign (Foreign, unsafeToForeign)
 import Foreign.Object (Object)
 import Unsafe.Coerce (unsafeCoerce)
@@ -79,31 +80,59 @@ defaultLogger = mkLogger defaultLoggerOptions
 foreign import _logImpl :: Fn3 String Logger ( Array Foreign ) ( Effect Unit )
 
 class LogImpl n where
-  logImpl :: String -> Logger -> ( Array Foreign ) -> n
+  logImpl :: String -> ( Array Foreign ) -> n
 
-instance logImplBase :: LogImpl ( Effect r ) where
-  logImpl = unsafeCoerce $ runFn3 _logImpl
+instance logImplBase :: LogImpl ( LoggerM r ) where
+  logImpl lvl opt = unsafeCoerce $ LoggerM \logger -> runFn3 _logImpl lvl logger opt
 
 else instance logImplP :: LogImpl n => LogImpl ( f -> n ) where
-  logImpl lvl lgr opt = \f -> logImpl lvl lgr ( opt <> [unsafeToForeign f] )
+  logImpl lvl opt = \f -> logImpl lvl ( opt <> [unsafeToForeign f] )
 
-trace :: forall n. LogImpl n => Logger -> n
-trace logger = logImpl "trace" logger []
+trace :: forall n. LogImpl n => n
+trace = logImpl "trace" []
 
-debug :: forall n. LogImpl n => Logger -> n
-debug logger = logImpl "debug" logger []
+debug :: forall n. LogImpl n => n
+debug = logImpl "debug" []
 
-info :: forall n. LogImpl n => Logger -> n
-info logger = logImpl "info" logger []
+info :: forall n. LogImpl n => n
+info = logImpl "info" []
 
-warn :: forall n. LogImpl n => Logger -> n
-warn logger = logImpl "warn" logger []
+warn :: forall n. LogImpl n => n
+warn = logImpl "warn" []
 
-error :: forall n. LogImpl n => Logger -> n
-error logger = logImpl "error" logger []
+error :: forall n. LogImpl n => n
+error = logImpl "error" []
 
-fatal :: forall n. LogImpl n => Logger -> n
-fatal logger = logImpl "fatal" logger []
+fatal :: forall n. LogImpl n => n
+fatal = logImpl "fatal" []
 
-custom :: forall n. LogImpl n => Logger -> String -> n
-custom logger lvl = logImpl lvl logger []
+custom :: forall n. LogImpl n => String -> n
+custom lvl = logImpl lvl []
+
+newtype LoggerM r = LoggerM ( Logger -> Effect r )
+
+runLogger :: Logger -> LoggerM ~> Effect
+runLogger logger ( LoggerM f ) =  f logger
+
+instance functorLoggerM :: Functor LoggerM where
+  map f ( LoggerM g ) = LoggerM (map f <<< g)
+
+instance applyLoggerM :: Apply LoggerM where
+  apply ( LoggerM f ) ( LoggerM g ) = LoggerM \logger -> do
+    f' <- f logger
+    g' <- g logger
+    pure $ f' g'
+
+instance applicativeLoggerM :: Applicative LoggerM where
+  pure r = LoggerM \_ -> pure r
+
+instance bindLoggerM :: Bind LoggerM where
+  bind ( LoggerM f ) g = LoggerM \logger -> do
+    f' <- f logger
+    case g f' of
+      LoggerM h -> h logger
+
+instance monadLoggerM :: Monad LoggerM
+
+instance monadEffectLoggerM :: MonadEffect LoggerM where
+  liftEffect e = LoggerM \_ -> e

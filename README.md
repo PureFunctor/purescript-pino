@@ -10,9 +10,10 @@ This package provides a low-level foreign API for using [pino](https://github.co
 main :: Effect Unit
 main = do
   logger <- defaultLogger
-  void $ info logger "This is doing some info debugging"
-  void $ info logger "Templates work too! %s" "Like this!"
-  
-  void $ info logger "Passing `mergingObject` works as such:"
-  void $ info logger (FO.empty # FO.insert "merging" "object")
+  runLogger logger do
+    void $ info "This is doing some info debugging"
+    void $ info "Templates work too! %s" "Like this!"
+
+    void $ info "Passing `mergingObject` works as such:"
+    void $ info (FO.empty # FO.insert "merging" "object")
 ```
