@@ -7,13 +7,23 @@ This package requires `pino` to be added as a dependency for your project.
 ## Overview
 This package provides a low-level foreign API for using [pino](https://github.com/pinojs/pino) loggers in PureScript. It provides a set of logging functions that emulate rest parameters through type class magic. Take for example:
 ```purescript
+module Test.Main where
+
+import Prelude
+
+import Effect (Effect)
+import Foreign.Object as FO
+import Node.Pino.Logger (defaultLogger, info, runLogger)
+import Node.Pino.Logger.Do as Pino
+
+
 main :: Effect Unit
 main = do
   logger <- defaultLogger
-  runLogger logger do
-    void $ info "This is doing some info debugging"
-    void $ info "Templates work too! %s" "Like this!"
+  runLogger logger Pino.do
+    info "This is doing some info debugging"
+    info "Templates work too! %s" "Like this!"
 
-    void $ info "Passing `mergingObject` works as such:"
-    void $ info (FO.empty # FO.insert "merging" "object")
+    info "Passing `mergingObject` works as such:"
+    info (FO.empty # FO.insert "merging" "object")
 ```
