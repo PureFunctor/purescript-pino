@@ -5,7 +5,7 @@ import Prelude
 import Data.Function.Uncurried (Fn3, runFn3)
 import Data.Options (Option, Options(..), opt, options)
 import Effect (Effect)
-import Effect.Class (class MonadEffect, liftEffect)
+import Effect.Class (class MonadEffect)
 import Foreign (Foreign, unsafeToForeign)
 import Foreign.Object (Object)
 import Unsafe.Coerce (unsafeCoerce)
