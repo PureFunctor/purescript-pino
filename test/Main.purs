@@ -5,14 +5,15 @@ import Prelude
 import Effect (Effect)
 import Foreign.Object as FO
 import Node.Pino.Logger (defaultLogger, info, runLogger)
+import Node.Pino.Logger.Do as Pino
 
 
 main :: Effect Unit
 main = do
   logger <- defaultLogger
-  runLogger logger do
-    void $ info "This is doing some info debugging"
-    void $ info "Templates work too! %s" "Like this!"
+  runLogger logger Pino.do
+    info "This is doing some info debugging"
+    info "Templates work too! %s" "Like this!"
 
-    void $ info "Passing `mergingObject` works as such:"
-    void $ info (FO.empty # FO.insert "merging" "object")
+    info "Passing `mergingObject` works as such:"
+    info (FO.empty # FO.insert "merging" "object")
