@@ -7,5 +7,10 @@
   "private": true,
   "dependencies": {
     "pino": "^6.11.2"
+  },
+  "scripts": {
+    "install": "spago install",
+    "build": "spago build",
+    "test": "spago test"
   }
 }
