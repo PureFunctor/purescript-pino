@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 Breaking changes:
 
 New features:
-* Added `Node.Pino.Logger.Do` for qualified do syntax (#1)
+* Added `Node.Pino.Logger.Do` module for qualified do syntax (#1)
 * Added top-level `Node.Pino` module with convenient re-exports (#3)
 
 Bugfixes:
